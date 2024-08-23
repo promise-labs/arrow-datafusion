@@ -67,12 +67,8 @@ impl ScalarUDFImpl for GetFieldFunc {
         }
 
         let name = match &args[1] {
-            Expr::Literal(name) => name,
-            _ => {
-                return exec_err!(
-                    "get_field function requires the argument field_name to be a string"
-                );
-            }
+            Expr::Literal(name) => name.to_string(),
+            other => other.display_name()?,
         };
 
         Ok(format!("{}[{}]", args[0], name))
@@ -119,16 +115,9 @@ impl ScalarUDFImpl for GetFieldFunc {
             );
         }
 
-        let name = match &args[1] {
-            Expr::Literal(name) => name,
-            _ => {
-                return exec_err!(
-                    "get_field function requires the argument field_name to be a string"
-                );
-            }
-        };
+        let key = &args[1];
         let data_type = args[0].get_type(schema)?;
-        match (data_type, name) {
+        match (data_type, key) {
             (DataType::Map(fields, _), _) => {
                 match fields.data_type() {
                     DataType::Struct(fields) if fields.len() == 2 => {
@@ -142,7 +131,7 @@ impl ScalarUDFImpl for GetFieldFunc {
                     _ => plan_err!("Map fields must contain a Struct with exactly 2 fields"),
                 }
             }
-            (DataType::Struct(fields), ScalarValue::Utf8(Some(s))) => {
+            (DataType::Struct(fields), Expr::Literal(ScalarValue::Utf8(Some(s)))) => {
                 if s.is_empty() {
                     plan_err!(
                         "Struct based indexed access requires a non empty string"
