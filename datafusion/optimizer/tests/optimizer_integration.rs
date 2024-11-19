@@ -344,7 +344,7 @@ fn test_propagate_empty_relation_inner_join_and_unions() {
 fn select_wildcard_with_repeated_column() {
     let sql = "SELECT *, col_int32 FROM test";
     let err = test_sql(sql).expect_err("query should have failed");
-   assert_eq!(
+    assert_eq!(
         "expand_wildcard_rule\ncaused by\nError during planning: Projections require unique expression names but the expression \"test.col_int32\" at position 0 and \"test.col_int32\" at position 7 have the same name. Consider aliasing (\"AS\") one of them.",
         err.strip_backtrace()
     );
