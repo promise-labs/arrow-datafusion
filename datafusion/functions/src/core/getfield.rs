@@ -68,6 +68,7 @@ impl ScalarUDFImpl for GetFieldFunc {
 
         let name = match &args[1] {
             Expr::Literal(name) => name.to_string(),
+            #[allow(deprecated)] // display_name
             other => other.display_name()?,
         };
 
