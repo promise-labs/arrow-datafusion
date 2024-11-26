@@ -45,7 +45,7 @@ jobs:
       - name: Setup Rust toolchain
         uses: ./.github/actions/setup-builder
         with:
-          rust-version: 1.82
+          rust-version: stable
       - name: Check dependencies
         run: |
           cd dev/depcheck
