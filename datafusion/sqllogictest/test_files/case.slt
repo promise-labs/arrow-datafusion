@@ -202,3 +202,14 @@ query I
 SELECT CASE arrow_cast([1,2,3], 'FixedSizeList(3, Int64)') WHEN arrow_cast([1,2,3], 'FixedSizeList(3, Int64)') THEN 1 ELSE 0 END;
 ----
 1
+
+query IBB
+SELECT c,
+    CASE WHEN c > 0 THEN true END AS c1,
+    CASE WHEN c > 0 THEN true ELSE false END AS c2
+FROM (VALUES (1), (0), (-1), (NULL)) AS t(c)
+----
+1 true true
+0 NULL false
+-1 NULL false
+NULL NULL false
