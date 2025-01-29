@@ -777,3 +777,18 @@ select make_array(make_array(1)) x UNION ALL SELECT make_array(arrow_cast(make_a
 ----
 [[-1]]
 [[1]]
+
+# test for https://github.com/apache/datafusion/issues/14352
+query TB rowsort
+SELECT
+    a,
+    a IS NOT NULL
+FROM (
+    -- second column, even though it's not selected, was necessary to reproduce the bug linked above
+    SELECT 'foo' AS a, 3 AS b
+    UNION ALL
+    SELECT NULL AS a, 4 AS b
+)
+----
+NULL false
+foo true
